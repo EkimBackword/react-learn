@@ -12,21 +12,21 @@
 
 > Нужно разобраться с основами *Flux* на примере с *Redax*.
 
-## 4) GraphQL (Node.js)
+## 4) GraphQL (Node.js + Express)
 
-> Нужно разобраться с *GraphQL*.
+> Нужно разобраться с *GraphQL* на примере *Node.js* приложения.
 
 ## 5) Apollo (Relay)
 
-> Применение *GraphQL* в реакт приложениях.
+> Применение *GraphQL* в *React* приложениях.
 
-## 6) Jest (TDD)
+## 6) Jest
 
-> *Unit* тестирование *React* приложений. И описание концепции TDD.
+> *Unit* тестирование *React* приложений.
 
 ## 7) Docker
 
-> Для чего нужен *Docker*.
+> Для чего нужен *Docker* ?
 
 ## 8) Service Worker
 
