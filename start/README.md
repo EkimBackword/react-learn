@@ -34,10 +34,10 @@
 
 ### **Команды для терминала**
 
-```
-$ npm install -g create-react-app
-$ create-react-app my-app
-$ cd my-app
+```bash
+    npm install -g create-react-app
+    create-react-app my-app
+    cd my-app
 ```
 
 > Забегая в будующее, для *create-react-app* есть конфигурация по сборке под TypeScript - [react-scripts-ts](https://www.npmjs.com/package/react-scripts-ts)
@@ -51,3 +51,35 @@ React достаточно прост в изучении. Обычно прил
 - [ReactJS DOCS](https://reactjs.org/docs/hello-world.html)
 - [Краткое руководство по React JS](https://habrahabr.ru/post/248799/)
 - И другой литературы. В интернете вы можете нати массу книг и статей по *React*
+
+## *Hello World*
+
+Наверное каждый программист начинает изучать технологию с простейшего кода:
+
+> Вывести на экран *Hello World*
+
+### *./src/components/App/App.jsx*
+
+```JavaScript
+    import React, { Component } from 'react';
+
+    export default class App extends Component {
+        render() {
+            return (
+                <div>
+                    <h1>Hello World</h1>
+                </div>
+            );
+        }
+    }
+```
+
+### *./src/index.js*
+
+```JavaScript
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+    import App from './components/App/App';
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+```
