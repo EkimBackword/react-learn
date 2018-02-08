@@ -40,3 +40,13 @@ $ cd my-app
 ```
 
 > Забегая в будующее, для *create-react-app* есть конфигурация по сборке под TypeScript - [react-scripts-ts](https://www.npmjs.com/package/react-scripts-ts)
+
+## Основы *React*
+
+React достаточно прост в изучении. Обычно приложения имеют сложную структуру и требуют вспомогательные библеотеки таких как: *React Router*, *Redax* и(или) других.
+
+> Для детального изучения основ советую ознакомиться с приведёнными ссылками ниже:
+
+- [ReactJS DOCS](https://reactjs.org/docs/hello-world.html)
+- [Краткое руководство по React JS](https://habrahabr.ru/post/248799/)
+- И другой литературы. В интернете вы можете нати массу книг и статей по *React*
