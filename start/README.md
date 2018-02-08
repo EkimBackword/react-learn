@@ -58,7 +58,9 @@ React достаточно прост в изучении. Обычно прил
 
 > Вывести на экран *Hello World*
 
-### *./src/components/App/App.jsx*
+### Пример кода
+
+> *./src/components/App/App.jsx*
 
 ```JavaScript
     import React, { Component } from 'react';
@@ -74,7 +76,7 @@ React достаточно прост в изучении. Обычно прил
     }
 ```
 
-### *./src/index.js*
+> *./src/index.js*
 
 ```JavaScript
     import React from 'react';
