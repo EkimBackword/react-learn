@@ -60,28 +60,146 @@ React достаточно прост в изучении. Обычно прил
 
 ### Пример кода
 
-> *./src/components/App/App.jsx*
+```JavaScript
+    import React from 'react';
+    import ReactDOM from 'react-dom';
+
+    ReactDOM.render(
+        <h1>Hello, world!</h1>,
+        document.getElementById('root')
+    );
+```
+
+## Введение в JSX
+
+### **JSX** - это расширение синтаксиса *JavaScript*
+
+> Например, объявим переменную HelloWorldElement таким образом:
 
 ```JavaScript
-    import React, { Component } from 'react';
+    const HelloWorldElement = <h1>Hello, world!</h1>;
+```
 
-    export default class App extends Component {
+Переменная *HelloWorldElement* не является ни строкой, ни HTML. Данный смешеный синтаксис говорит нам о том, что мы объявили *ReactElement*. То есть, JSX создает «элементы» React.
+
+> **Элементы** - это  деталь (маленькая часть) приложений React.
+
+При компиляции **Элементы** в JSX преобразуются в вызов функции `React.createElement()`:
+
+#### **Данный код**
+
+```JavaScript
+    const element = (
+        <h1 className="greeting">
+            Hello, world!
+        </h1>
+    );
+```
+
+#### **Переобразуется в такой**
+
+```JavaScript
+    const element = React.createElement(
+        'h1',
+        {className: 'greeting'},
+        'Hello, world!'
+    );
+```
+
+### **JSX** - это выражение тоже
+
+После компиляции выражения *JSX* становятся регулярными вызовами функций *JavaScript* и приравниваются к *JavaScript-объктам*. Это озночает, что *JSX* можно использовать в циклах *for* и условиях *if* и добавлять внутрь переменные.
+
+```JavaScript
+    function hi(userName) {
+        if (userName) {
+            return <h1>Hello, {userName}!</h1>;
+        }
+        return <h1>Hello, no name person.</h1>;
+    }
+```
+
+> **Предупреждение**: Поскольку *JSX* ближе к *JavaScript*, чем к *HTML*, *React DOM* использует **camelCase** соглашение об именовании свойств вместо имен атрибутов *HTML*. Например, **class** становится **className** в *JSX* и **tabindex** становится **tabIndex**.
+
+Теги JSX могут содержать дочерние элементы:
+
+```JavaScript
+    const element = (
+        <div>
+            <h1>Title</h1>
+            <h2>Subtitle</h2>
+        </div>
+    );
+```
+
+### Предоставление элемента в DOM
+
+Чтобы отрендерить (визуализировать) элемент React в DOM, нужно вызвать ReactDOM.render() с двумя аргументами (что отобразит и где отобразить):
+
+```JavaScript
+    const element = <h1>Hello, world</h1>;
+    ReactDOM.render(element, document.getElementById('root'));
+```
+
+### Обновление элемента
+
+*React* элементы **неизменяемы** (*immutable*). Создав элемент, вы не сможете изменить его дочерние элементы или атрибуты. Элемент можно сравнить с кадром в фильме: он представляет собой пользовательский интерфейс в определенный момент времени.
+
+На данный момент мы знаем только один способ обновить интерфейс - это вызвать `ReactDOM.render()` с новым состоянием элемента.
+
+```JavaScript
+    function tick() {
+        const MyTimer = (
+            <h1> { new Date().toLocaleTimeString() }</h1>
+        );
+        ReactDOM.render(MyTimer, document.getElementById('root'));
+    }
+
+    setInterval(tick, 1000);
+```
+
+> **Заметка:** На практике большинство приложений React запускают `ReactDOM.render()` только один раз. Чуть позже мы разберёмся, как изменять состояние элементов.
+
+## Компоненты и их свойства
+
+> *Компоненты позволяют разделить пользовательский интерфейс на самостоятельные, многоразовые фрагменты и подумать о каждой части отдельно.*
+
+### Функциональные компоненты и компоненты основанные на классах
+
+Самый простой способ определить компонент - написать *JavaScript-функцию*:
+
+```JavaScript
+    function Hello(props) {
+        return <h1>Hello, {props.name}</h1>;
+    }
+```
+
+Эта функция является компонентой React, потому что она принимает на вход один аргумент *props* (который хранит в себе свойства) и возвращает *React-элемент*. Такие компоненты мы называем **«функциональными»**, потому что они буквально являются функциями *JavaScript*.
+
+Вы также можете использовать классы ( из ES6 ) для определения компонентов:
+
+```JavaScript
+    class Hello extends React.Component {
         render() {
-            return (
-                <div>
-                    <h1>Hello World</h1>
-                </div>
-            );
+            return <h1>Hello, {this.props.name}</h1>;
         }
     }
 ```
 
-> *./src/index.js*
+> Классы имеют некоторые дополнительные функции (связанные с жизненым циклом компоненты), которые мы обсудим позже.
+
+Когда React видит элемент, представляющий пользовательский компонент, он передает атрибуты *JSX* этому компоненту как единый объект (**props**).
 
 ```JavaScript
-    import React from 'react';
-    import ReactDOM from 'react-dom';
-    import App from './components/App/App';
+    function Hello(props) {
+        return <h1>Hello, {props.name}</h1>;
+    }
 
-    ReactDOM.render(<App />, document.getElementById('root'));
+    ReactDOM.render( <Hello name="EkimBackword" />, document.getElementById('root') );
 ```
+
+> **Предостережение:** Всегда начинайте имена компонентов с большой буквы. React обрабатывает компоненты, начинающиеся с строчных букв, как теги DOM.
+
+Компоненты могут ссылаться на другие компоненты. Это позволяет использовать одну и ту же компоненту в разных местах. Например кастомная кнопка может быть элементом формы, частью списака меню или частью модального окна. Форма, модальное окно или даже таблица в приложениях React обычно выражаются как компоненты.
+
+> Например, пост в инстаграмм: Это компонент, который содержит другие компоненты: UserInfo, Avatar, Comment и так далее.
