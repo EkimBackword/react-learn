@@ -203,3 +203,355 @@ React достаточно прост в изучении. Обычно прил
 Компоненты могут ссылаться на другие компоненты. Это позволяет использовать одну и ту же компоненту в разных местах. Например кастомная кнопка может быть элементом формы, частью списака меню или частью модального окна. Форма, модальное окно или даже таблица в приложениях React обычно выражаются как компоненты.
 
 > Например, пост в инстаграмм: Это компонент, который содержит другие компоненты: UserInfo, Avatar, Comment и так далее.
+
+## Состояние и жизненный цикл компоненты
+
+> Давайте создадим компоненту часов и на основе неё изучим состояние компоненты и жизненный цикл
+
+Функциональные компоненты, в данном случаи будет недостаточно, так как нам нужно будет следить за состоянием компоненты и иметь методы жизненого цикла. При этом компоненты на основе *ES6-классов* могут нам помочь.
+
+Создадим основу компоненты:
+
+```JavaScript
+import React from 'react';
+
+export default class Clock extends React.Component {
+    render() {
+        return (
+            <h3> { new Date().toLocaleTimeString() } </h3>
+        )
+    }
+}
+```
+
+После того, как мы запустим наше приложение, мы увидим время. Но вот не задача, время стоит на месте. Как же это можно решить?
+
+1. Добавленим локальное состояние в класс
+2. Добавленим методы жизненного цикла в класс
+
+### Добавление локального состояния в класс
+
+1. Добавим конструктор класса, в котором объявим наше начальное сосстояние
+
+    ```JS
+        constructor(props) {
+            super(props);
+            this.state = {
+                now: new Date()
+            };
+        }
+    ```
+
+2. Заменим `new Date()` на `this.state.date` в методе `render()`
+
+### Добавление методов жизненного цикла в класс
+
+Для начала нам нужно будет запускать таймер всякий раз, когда `Clock` отображается в DOM в первый раз. В *React* это называется «mounting» (монтаж, установка). То есть перед тем, как повесить часы на стену нам нужно их запустить.
+
+Потом нужно не забыть от том, что когда мы будем снимать часы со стены нам нужно остановить их, чтобы они не тратили энерги. В *React* это называется «unmounting» (убрать, размантировать).
+
+Для этого у компонентов на осове классов есть специальные методы для запуска некоторого кода, когда компонент появляется в DOM и когда он от туда пропадает.
+
+> `componentDidMount` / `componentWillUnmount`
+
+```JS
+    // метод изменения состояния
+    tick() {
+        this.setState({
+          now: new Date()
+        });
+    }
+
+    // метод запуска часов
+    componentDidMount() {
+        /*
+            вы можете добавлять дополнительные поля в класс вручную, если вам нужно сохранить что-то, что не используется для визуального вывода.
+        */
+        this.timerID = setInterval(
+          () => this.tick(),
+          1000
+        );
+    }
+
+    // метод остановки часов
+    componentWillUnmount() {
+        clearInterval(this.timerID);
+    }
+```
+
+> Теперь часы тикают каждую секунду.
+
+### Методы жизненого цикла
+
+1. Иницилизация компоненты
+
+    `constructor(props) { }` - Дефолтное состояние компоненты описывается здесь.
+        Например, объявляем `state`.
+
+    `componentWillMount()` - Делаем получаем динамические данные перед тем, как строить виртуальный DOM.
+        Например, запрос данных на сервер.
+
+    `render()` - построение Virtual DOM, а его отображение в реальном DOM.
+
+    `componentDidMount()` - Взаимодействие с компонентой после того как она была отображена.
+        Например, запустить анимацию.
+
+2. Обновление компоненты (`setState` в нашей компоненте и в родительских компонентов)
+
+    `componentWillReceiveProps(nextProps) { }` - отрабатывает только при изменении родительского компонента.
+        Можно определить какие были изменены в props, и были ли они вообще.
+
+    `shouldComponentUpdate(nextProps, nextState)` - Ручная настройка обновления компонента (Если вернёт `true` - надо перестроить, если вернёт `false` - то перестраивать не будет).
+        Используется если нужно оптимизировать обновление компоненты. (По дефолту можно наследоваться от PureComponent, в котором уже реализовано сравнение всех полей props и state).
+
+    `componentWillUpdate(nextProps, nextState)` - Сейчас мы будем перстраивать компоненты.
+        Можно сделать какие либо действия, например, запрос на сервер.
+
+    `render()` - построение Virtual DOM, а его отображение в реальном DOM.
+
+    `componentDidUpdate(prevProps, prevState)` - после построения реального DOM.
+
+3. Удаление компоненты
+
+    `componentWillUnmount()` - Оповещение о том что будет удалена компонента.
+        Например, нужно подчистить *listeners*
+
+### Правильное использование `setState()`
+
+Есть три вещи, о которых вы должны знать:
+
+1. Не изменять состояние напрямую, используйте для этого метод `setState()`. Единственным местом, где вы можете назначить, `this.state` является конструктор.
+
+2. Обновления состояния могут быть асинхронными. Поскольку `this.props` и `this.state` могут быть обновлены асинхронно, вы не должны полагаться на свои значения для вычисления следующего состояния. По этому используйте вторую форму `setState()`, которая принимает функцию, а не объект. Эта функция получит `prevState` (состояние в момент изменение) в качестве первого аргумента и `props` (свойства во время обновления) в качестве второго аргумента.
+
+    ```JS
+        // Не корректно
+        this.setState({
+        counter: this.state.counter + this.props.increment,
+        });
+
+        // Корректно
+        this.setState((prevState, props) => ({
+        counter: prevState.counter + props.increment
+        }));
+    ```
+
+3. Обновления состояния, объединяются автоматечески.
+
+```JS
+    constructor (props) {
+        super(props);
+        this.state = {
+            mens: [],
+            girls: []
+        };
+    }
+
+    componentDidMount () {
+        fetchMens()
+            .then(response => { this.setState({ mens: response.mens }); });
+
+        /*
+            Изменение this.setState({girls}) оставляет this.state.mens нетронутыми, но полностью заменяет this.state.girls.
+        */
+        fetchGirls()
+            .then(response => { this.setState({ girls: response.girls }); });
+    }
+```
+
+### Потоки данных
+
+Ни родительский, ни дочерний компоненты не могут знать, имеет ли какой-либо компонент состояние или нет, и им не важно, каким образом объявлена данная компонента как функция или класс. Поэтому состояния называют локальными, они недоступны для любого компонента, кроме того, который владеет и устанавливает их.
+
+Компонент может передать своеё состояние вниз в качестве `props` для дочернего компонента.
+
+```JS
+ <Child anyProp={this.state.anyProp}>
+```
+
+```JS
+    function Child (props) {
+        return <h2>{props.anyProp}</h2>;
+    }
+```
+
+Данный подход называют «однонаправленным» потоком данных (* **top-down** or **unidirectional** data flow*).
+
+## Обработка событий
+
+> Обработка событий элемента React очень похожа на обработку событий у элементов DOM, но существуют синтаксические различия:
+
+- Названия событий пишуться `camelCase`, а не `lowercase`
+- Функцию в JSX вы передаете как обработчик события, а не строку.
+
+```html
+    <!-- Real DOM -->
+    <button onclick="activateLasers()">
+    Activate Lasers
+    </button>
+
+    <!-- React Element -->
+    <button onClick={activateLasers}>
+    Activate Lasers
+    </button>
+```
+
+В React чтобы предотвратить поведение элемента по умолчанию, вы должны явно вызвать preventDefault.
+
+```JS
+    function handleEvent (e) {
+        e.preventDefault();
+        console.log('handle event');
+    }
+
+    return (
+        <a href="#" onClick={handleEvent}> Click me </a>
+    );
+```
+
+Нужно быть осторожными с `this` при обработке событий и вызовах методов в JSX. В JavaScript методы класса не связаны по умолчанию. Если вы забудете связать `this.handleClick` и `this` и передадите его `onClick`, `this` будет `undefined` когда функция будет фактически вызвана.
+
+Существует два варианта написания
+
+> Первый базовый
+
+```JS
+    class SomeComponent extends React.Component {
+        constructor (props) {
+            super(props);
+            this.state = { name: 'SomeComponent' }
+            this.handleEvent = this.handleEvent.bind(this);
+        }
+
+        handleEvent () {
+            e.preventDefault();
+            console.log(this.state.name, 'handle event');
+        }
+
+        render () {
+            return (
+                <button onClick={this.handleEvent}>
+                    {this.state.isToggleOn ? 'ON' : 'OFF'}
+                </button>
+            );
+        }
+    }
+```
+
+> Второй эксперементальный (этот синтаксис включен по умолчанию при создании проекта с помощью *create-react-app*)
+
+```JS
+    class SomeComponent extends React.Component {
+        constructor (props) {
+            super(props);
+            this.state = { name: 'SomeComponent' }
+        }
+
+        handleEvent = () => {
+            e.preventDefault();
+            console.log(this.state.name, 'handle event');
+        }
+
+        render () {
+            return (
+                <button onClick={this.handleEvent}>
+                    {this.state.isToggleOn ? 'ON' : 'OFF'}
+                </button>
+            );
+        }
+    }
+```
+
+### Передача аргументов обработчикам событий
+
+Иногда требуется передать какие-нибудь кастомные аргументы в обработчик событий. Например, удаление элемента по `id`.
+
+```JS
+<button onClick={(e) => this.delete(id, e)}>Delete</button>
+<button onClick={(...args) => this.delete(id, ...args)}>Delete</button>
+<button onClick={this.delete.bind(this, id)}>Delete</button>
+```
+
+Все три записи эквивалентны.
+
+## Условный рендеринг
+
+Часто встречается ситуация, что в зависимости от состояния компоненты нужно отображать или скрывать какой-либо элелемент. Также вы можете использовать переменные для хранения элементов. Например:
+
+```JS
+    function LoginComponent (props) {
+        return (
+            <button onClick={props.onClick}> Login </button>
+        );
+    }
+
+    function LogoutComponent (props) {
+        return (
+            <button onClick={props.onClick}> Logout </button>
+        );
+    }
+
+    class LoginControl extends React.Component {
+        constructor (props) {
+            super(props);
+            this.state = {isLoggedIn: false};
+        }
+
+        handleLoginClick = () => {
+            this.setState({isLoggedIn: true});
+        }
+
+        handleLogoutClick = () => {
+            this.setState({isLoggedIn: false});
+        }
+
+        render () {
+            const isLoggedIn = this.state.isLoggedIn;
+
+            let button = null;
+            if (isLoggedIn) {
+                button = <LogoutComponent onClick={this.handleLogoutClick} />;
+            } else {
+                button = <LoginComponent onClick={this.handleLoginClick} />;
+            }
+
+            return (
+                <div>
+                    <h1>Some Text</h1>
+                    {button}
+                </div>
+            );
+        }
+    }
+```
+
+Так же можно использовать логические операторы ( `&&`, Inline If-Else `condition ? true : false`).
+
+### Отображение списка элементов
+
+Для отображения списка элементов, достаточно сделать массив React элементов, например:
+
+```JS
+    const numbers = [1, 2, 3, 4, 5];
+    const list = numbers.map((number) =>
+        <li>{number}</li>
+    );
+
+    ReactDOM.render(
+        <ul>{list}</ul>,
+        document.getElementById('root')
+    );
+```
+
+У *React* элементов есть поле `key`, оно помогает фреймворку идентифицировать элемент. Например, если в массиве изменился элемент то *React* перерисует все элементы заново. Но если каждому элементу дать уникальный `key`, то *React* перерисует только один элемент.
+
+```JS
+
+    const listOne = data.map(element => <li key={element.id}> {element.text} </li> );
+
+    const listTow = data.map(( element, index ) =>
+        // Используёте index, только в том случае если нет возможности присвоить уникальный ID
+        <li key={element.id}> {element.text} </li>
+    );
+
+```
