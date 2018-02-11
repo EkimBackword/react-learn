@@ -555,3 +555,124 @@ export default class Clock extends React.Component {
     );
 
 ```
+
+## Формы
+
+Элементы *HTML-формы* работают немного иначе, чем другие элементы *DOM* в *React*, потому что элементы *HTML-формы* по-умолчанию сохраняют некоторое внутреннее состояние. Например, эта форма допускает одно поле `name`:
+
+```html
+<form>
+  <label>
+    Name:
+    <input type="text" name="name" />
+  </label>
+  <input type="submit" value="Submit" />
+</form>
+```
+
+Но в большинстве случаев удобно иметь *JS-функцию*, которая обрабатывала отправляемую формы и имела доступ к данным, которые пользователь вводил в неё. Для достижения этого используют технологию под названием «Контролируемые компоненты» (*controlled components*).
+
+### **Контролируемые компоненты**
+
+Элементы *HTML-формы*, такие как `input`, `textarea` и `select` как правило, ведут свое собственное состояние и обновлять на основе пользовательского ввода. В *React* изменение состояния обычно сохраняется в свойство `state` у компоненты и обновляется только с помощью setState().
+
+Мы можем сделать *React-состояние* «единственным источником истины». Затем заставляем *React-компонент*, который отображает форму, контролировать, каждое изменение в форме. **Контролируемым компонентом** называют, такой *React-компонент*, значения элементов формы которого контралируются *React-ом*
+
+Что касается обработка нескольких полей формы, когда вам нужно обрабатывать такую форму, вы можете добавить атрибут `name` к каждому элементу и позволить функции обработчика выбирать, что делать, исходя из значения `event.target.name`.
+
+```JS
+    class MyForm extends React.Component {
+        constructor (props) {
+            super(props);
+            this.state = {
+                flag: true,
+                count: 2
+            };
+        }
+
+        handleInputChange = (event) => {
+            const target = event.target;
+            const value = target.type === 'checkbox' ? target.checked : target.value;
+            const name = target.name;
+
+            this.setState({
+                [name]: value
+            });
+        }
+
+        render () {
+            return (
+                <form>
+                    <label>
+                        Is going:
+                        <input name="flag"
+                            type="checkbox"
+                            checked={this.state.flag}
+                            onChange={this.handleInputChange} />
+                    </label>
+                    <br />
+                    <label>
+                        Number of guests:
+                        <input name="count"
+                            type="number"
+                            value={this.state.count}
+                            onChange={this.handleInputChange} />
+                    </label>
+                </form>
+            );
+        }
+    }
+```
+
+### *HTML-input* с типом *file*
+
+Данный элемент позволяет пользователю выбрать один или несколько файлов из своего хранилища для загрузки на сервер. Поскольку его значение доступно только для чтения, это **неконтролируемый компонент** в React. Возможно позже мы разберёмся с **неконтролируемыи компонентами**.
+
+### Немного полезных советов
+
+> **Заметка:** Вы можете передать массив в атрибут `value`, это позволит вам выбрать несколько параметров в теге `value`:
+
+```html
+<select multiple={true} value={['B', 'C']}>
+```
+
+> Если нам нужна кастомная обработка полей то это не проблема. Например, если мы хотим, чтобы эти имена записывались заглавными буквами, мы могли бы написать обработчик похожий на этот:
+
+```JS
+handleChange (event) {
+  this.setState({value: event.target.value.toUpperCase()});
+}
+```
+
+> В большинстве случаев разработчики *React* рекомендуют использовать контролируемые компоненты для реализации форм. В управляемом компоненте данные формы обрабатываются компонентом React. Альтернативой являются неконтролируемые компоненты, где DOM обрабатывает данные формы сам.
+
+Чтобы написать неконтролируемый компонент, вместо написания обработчиков событий, вы можете использовать **ref** для получения значений формы из *DOM*.
+
+В следующем примере показано, как создать ссылку на узел DOM для доступа к файлам (-ам) в обработчике отправки (Вы должны использовать [File API](https://developer.mozilla.org/ru/docs/Web/API/File/Using_files_from_web_applications) для взаимодействия с файлами):
+
+```JS
+handleSubmit (event) {
+    event.preventDefault();
+    alert(
+        `Selected file - ${this.fileInput.files[0].name}`
+    );
+}
+
+render() {
+    return (
+        <form onSubmit={this.handleSubmit}>
+            <label>
+                Upload file:
+                <input type="file" ref={
+                    (input) => {
+                        this.fileInput = input;
+                    }
+                }/>
+            </label>
+            <br />
+            <button type="submit">Submit</button>
+        </form>
+    );
+}
+```
+
