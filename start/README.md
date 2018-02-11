@@ -676,3 +676,67 @@ render() {
 }
 ```
 
+### Поднятие состояния (*Lifting State Up*)
+
+При написании кода в *React* иногда получается, что состояние одной компоненты нужно использовать в другой, находящейся на одном уровне. В таком солучаем применяют подход под название *Lifting State Up* (по русски это можно перевести, как поднятие состояния).
+
+При поднятии состояния в родительский, чтобы оба ребёнка могли его отображать и обрабатывать, значение передается в дочернии компоненты по средством `props`. Но вот не задача, `props` доступен только для чтения. В таком случае в месте со значением переменной нужно передавать и обработчик изменения значения, а в дочерние элементы уже прередовать этот обработчик по средством `props`.
+
+```JS
+convert(value, convertTo) {
+    /* any convert */
+    return value;
+}
+
+class Child extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+
+    handleChange = (e) => {
+        this.props.onValueChange(e.target.value);
+    }
+
+    render () {
+        const value = this.props.value;
+        const unit = this.props.unit;
+        return (
+            <fieldset>
+                <legend>{unit}</legend>
+                <input value={value} onChange={this.handleChange} />
+            </fieldset>
+        );
+    }
+}
+
+class Parent extends React.Component {
+    constructor (props) {
+        super(props);
+        this.state = { rubles: 100 };
+    }
+
+    handleRublesChange = (rubles) => {
+        this.setState({rubles});
+    }
+
+    handleDollarsChange = (dollars) => {
+        const rubles = convert(dollars, 'toRubles');
+        this.setState({rubles});
+    }
+
+    render () {
+        const dollars = convert(this.state.rubles, 'toDollars');
+        return (
+            <div>
+                <Child value={this.state.rubles}
+                    unit={'rubles'}
+                    onValueChange={this.handleCelsiusChange} />
+
+                <Child value={dollars}
+                    unit={'dollars'}
+                    onValueChange={this.handleFahrenheitChange} />
+            </div>
+        );
+    }
+}
+```
