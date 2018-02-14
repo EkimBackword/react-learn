@@ -14,9 +14,9 @@ const port = 35123;
 /* Create Server */
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressValidator());
 app.use(cors({ credentials: true, origin: true }));
 app.use(session({

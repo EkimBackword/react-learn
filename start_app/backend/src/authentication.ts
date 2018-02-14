@@ -4,11 +4,11 @@ import { Request, Response, NextFunction } from 'express';
 import { User, IUser } from './models/User';
 
 passport.serializeUser((user: IUser, done) => {
-    done(null, user.id);
+    done(null, user.ID);
 });
 
 passport.deserializeUser(async (id, done) => {
-    const user = await User.findById(id);
+    const user = await User.findOne({ ID: id });
     const profile: IUser = user.toJSON();
     delete profile.hash;
     done(null, profile);

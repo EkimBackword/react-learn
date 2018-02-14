@@ -2,7 +2,7 @@ import { Document, Schema, Model, model } from 'mongoose';
 const passwordHash = require('password-hash');
 
 export interface IUser {
-    id?: any;
+    ID?: string;
     login?: string;
     avatarUri?: string;
     role?: string;
@@ -12,6 +12,7 @@ export interface IUser {
 }
 
 export const UserSchema: Schema = new Schema({
+    ID: String,
     login: String,
     avatarUri: String,
     role: String,
@@ -20,7 +21,7 @@ export const UserSchema: Schema = new Schema({
 });
 
 UserSchema.methods.verifyPassword = function(password: string): boolean {
-    return passwordHash.verifyPassword(password, this.hash);
+    return passwordHash.verify(password, this.hash);
 };
 
 export interface IUserModel extends IUser, Document {
