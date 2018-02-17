@@ -3,8 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/react-form": "^2.12.1",
+    "axios": "^0.17.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-form": "^2.16.3",
     "react-scripts": "1.1.1"
   },
   "scripts": {

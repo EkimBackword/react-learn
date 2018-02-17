@@ -1,0 +1,44 @@
+.login-form {
+    max-width: 400px;
+    max-height: 500px;
+    padding: 8px 16px;
+    box-shadow: 1px 1px 8px -1px #ffb300;
+    z-index: 9999;
+}
+
+.login-form>input, .login-form>button {
+    margin: 4px;
+}
+
+.login-form label{
+    margin: 0 0 3px 0;
+    padding: 0px;
+    display: block;
+    font-weight: bold;
+}
+input, textarea, select{
+    box-sizing: border-box;
+    border: 1px solid #ffb300;
+    padding: 7px;
+    margin: 0px;
+    transition: all 0.30s ease-in-out;
+    outline: none;  
+}
+input:focus,
+textarea:focus, 
+select:focus {
+    box-shadow: 0 0 8px #ffb300c0;
+    border: 1px solid #ffb300;
+}
+
+button {
+    background: #00695c;
+    padding: 8px 15px 8px 15px;
+    border: none;
+    outline: none;
+    color: #fff;
+}
+button:hover, button:focus  {
+    /* background: #00695df0; */
+    box-shadow: 0 0 4px #004d40;
+}

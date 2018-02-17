@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "hs-app",
+  "name": "Simple hearthstone tournament application",
   "icons": [
     {
       "src": "favicon.ico",
