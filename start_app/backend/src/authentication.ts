@@ -1,14 +1,14 @@
 import * as passport from 'passport';
 import { Strategy } from 'passport-local';
 import { Request, Response, NextFunction } from 'express';
-import { User, IUser } from './models/User';
+import { User, IUser, IUserModel } from './models/User';
 
-passport.serializeUser((user: IUser, done) => {
-    done(null, user.ID);
+passport.serializeUser((user: IUserModel, done) => {
+    done(null, user._id);
 });
 
 passport.deserializeUser(async (id, done) => {
-    const user = await User.findOne({ ID: id });
+    const user = await User.findOne({ _id: id }).populate('tournaments').exec();
     const profile: IUser = user.toJSON();
     delete profile.hash;
     done(null, profile);
@@ -20,7 +20,8 @@ passport.use(new Strategy({
     },
     async (username, password, done) => {
         try {
-            const user = await User.findOne({login : username});
+            console.log(1);
+            const user = await User.findOne({login : username}).exec();
             if (!user) {
                 return done(null, false, { message: 'Некорректый Логин' });
             }
@@ -29,6 +30,7 @@ passport.use(new Strategy({
             }
             const profile: IUser = user.toJSON();
             delete profile.hash;
+            console.log(profile);
             done(null, profile);
         } catch (error) {
             return done(error);

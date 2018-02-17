@@ -17,6 +17,18 @@ describe('Добавление нового пользователя', () => {
             .send(user)
             .expect(204, done);
     });
+    it('204 (Добавить в БД)', (done) => {
+        const user: IUser = {
+            login: 'test1',
+            avatarUri: 'https://s3.amazonaws.com/kinlane-productions/bw-icons/bw-test-user.png',
+            role: 'admin',
+            password: 'test123',
+            hidden: false
+        };
+        request.post('/add')
+            .send(user)
+            .expect(204, done);
+    });
 });
 
 

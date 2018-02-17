@@ -1,8 +1,10 @@
 import { Application, Request, Response, NextFunction, Router } from 'express';
 import * as passport from 'passport';
+import * as mongoose from 'mongoose';
 import { isAuth, requireAdmin } from '../authentication';
 import { User, IUser } from '../models/User';
 import * as uuid from 'uuid';
+import { Tournament, ITournament } from '../models/Tournament';
 const passwordHash = require('password-hash');
 
 export class UserController {
@@ -17,7 +19,6 @@ export class UserController {
     }
 
     private async login(req: Request, res: Response) {
-        console.log(req.body);
         if (req.user) {
             req.login(req.user, (err) => {
                 if (err) {
@@ -51,7 +52,6 @@ export class UserController {
             try {
                 const data = req.body;
                 data.hash = passwordHash.generate(data.password);
-                data.ID = uuid.v1();
                 delete data.password;
                 let newUser = new User(data);
                 newUser = await newUser.save();
